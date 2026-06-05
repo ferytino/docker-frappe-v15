@@ -1,0 +1,6 @@
+# Force LF line endings for shell scripts, regardless of OS
+*.sh        text eol=lf
+*.env       text eol=lf
+Dockerfile  text eol=lf
+*.yml       text eol=lf
+*.cnf       text eol=lf
