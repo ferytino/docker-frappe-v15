@@ -1,0 +1,29 @@
+# Environment files
+.env
+env
+.env.*
+**/.env
+**/env
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Frappe container files
+frappe/
+
+# Bench sites
+sites/assets
+sites/*/private
+sites/*/public/files
+
+# Database dumps
+data/
+*.sql
+*.gz.env

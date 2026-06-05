@@ -1,0 +1,43 @@
+services:
+
+  mariadb:
+    image: mariadb:10.11
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./data/mariadb:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/frappe.cnf:ro
+
+  redis-cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  redis-queue:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  frappe:
+    image: coworker-id/frappe:v15
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+      - redis-cache
+      - redis-queue
+    working_dir: /home/coworker
+    volumes:
+      - ./frappe:/home/coworker/frappe
+      - ./bootstrap-basic-apps.sh:/home/coworker/bootstrap-basic-apps.sh
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    tty: true
+    stdin_open: true
+    command: bash

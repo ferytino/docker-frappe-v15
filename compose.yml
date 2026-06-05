@@ -1,0 +1,67 @@
+services:
+
+  mariadb:
+    image: mariadb:10.11
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data/mariadb:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/frappe.cnf:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  redis-cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          memory: 192m
+
+  redis-queue:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 64mb --maxmemory-policy noeviction
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+  frappe:
+    image: ferytino/frappe:v15-image-r1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MALLOC_ARENA_MAX: "2"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+    working_dir: /home/ubuntu/frappe
+    volumes:
+      - ./frappe:/home/ubuntu/frappe
+      - ./install-erpnext.sh:/home/ubuntu/frappe/install-erpnext.sh:ro
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    tty: true
+    stdin_open: true
+    command: bash
+    deploy:
+      resources:
+        limits:
+          memory: 4g
