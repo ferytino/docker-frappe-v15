@@ -59,7 +59,7 @@ if [ ! -f "$MARKER" ]; then
         echo "Removing incomplete site from previous attempt..."
         rm -rf "sites/${SITE_NAME}"
         mysql -h "${DB_HOST}" -u root -p"${MYSQL_ROOT_PASSWORD}" \
-            -e "DROP DATABASE IF EXISTS \`${SITE_NAME//./_}\`;" 2>/dev/null || true
+            -e "DROP DATABASE IF EXISTS \`${MYSQL_DATABASE}\`;" 2>/dev/null || true
     fi
 
     bench new-site \
@@ -67,6 +67,8 @@ if [ ! -f "$MARKER" ]; then
         --db-host ${DB_HOST} \
         --db-root-username root \
         --db-root-password ${MYSQL_ROOT_PASSWORD} \
+        --db-name ${MYSQL_DATABASE} \
+        --db-password ${MYSQL_PASSWORD} \
         --admin-password ${ADMIN_PASSWORD}
 
     bench --site ${SITE_NAME} enable-scheduler

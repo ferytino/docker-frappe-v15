@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./data/mariadb:/var/lib/mysql
       - ./my.cnf:/etc/mysql/conf.d/frappe.cnf:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
@@ -42,6 +42,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      MALLOC_ARENA_MAX: "2"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -62,6 +64,3 @@ services:
       resources:
         limits:
           memory: 4g
-          
-volumes:
-  mariadb_data:

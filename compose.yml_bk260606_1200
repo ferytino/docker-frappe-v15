@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./data/mariadb:/var/lib/mysql
       - ./my.cnf:/etc/mysql/conf.d/frappe.cnf:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
@@ -42,6 +42,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      MALLOC_ARENA_MAX: "2"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -52,6 +54,7 @@ services:
     working_dir: /home/ubuntu/frappe
     volumes:
       - ./frappe:/home/ubuntu/frappe
+      - ./install-erpnext.sh:/home/ubuntu/frappe/install-erpnext.sh:ro
     ports:
       - "8000:8000"
       - "9000:9000"
@@ -62,6 +65,3 @@ services:
       resources:
         limits:
           memory: 4g
-          
-volumes:
-  mariadb_data:
