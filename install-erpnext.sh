@@ -8,7 +8,7 @@ cd /home/ubuntu/frappe
 
 if [ ! -f bench/Procfile ]; then
     echo "Initializing Bench..."
-    bench init \
+    bench --verbose init \
         --frappe-branch ${FRAPPE_BRANCH} \
         bench
 
@@ -54,21 +54,21 @@ done
 MARKER="sites/${SITE_NAME}/.install_complete"
 
 if [ ! -f "$MARKER" ]; then
-    # Clean up any partial previous attempt
+    # Clean up any partial previous attempt and the MariaDB-init database
     if [ -d "sites/${SITE_NAME}" ]; then
         echo "Removing incomplete site from previous attempt..."
         rm -rf "sites/${SITE_NAME}"
-        mysql -h "${DB_HOST}" -u root -p"${MYSQL_ROOT_PASSWORD}" \
-            -e "DROP DATABASE IF EXISTS \`${MYSQL_DATABASE}\`;" 2>/dev/null || true
     fi
+    mysql -h "${DB_HOST}" -u root -p"${MYSQL_ROOT_PASSWORD}" \
+        -e "DROP DATABASE IF EXISTS \`${MYSQL_DATABASE}\`;" 2>/dev/null || true
 
     bench new-site \
         ${SITE_NAME} \
         --db-host ${DB_HOST} \
-        --db-root-username root \
-        --db-root-password ${MYSQL_ROOT_PASSWORD} \
         --db-name ${MYSQL_DATABASE} \
         --db-password ${MYSQL_PASSWORD} \
+        --db-root-username root \
+        --db-root-password ${MYSQL_ROOT_PASSWORD} \
         --admin-password ${ADMIN_PASSWORD}
 
     bench --site ${SITE_NAME} enable-scheduler
