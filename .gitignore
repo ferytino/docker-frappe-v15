@@ -27,3 +27,7 @@ sites/*/public/files
 data/
 *.sql
 *.gz.env
+
+# Compose backups & experiments — commit only named compose files
+compose.yml_bk*
+compose.yml_cloude

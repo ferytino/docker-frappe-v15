@@ -38,7 +38,8 @@ services:
           memory: 128m
 
   frappe:
-    image: ferytino/frappe:v15-image-r1
+    image: ferytino/frappe:v15-image-r2
+    container_name: frappe
     restart: unless-stopped
     env_file:
       - .env
@@ -65,3 +66,8 @@ services:
           
 volumes:
   mariadb_data:
+
+networks:
+  default:
+    name: omniabyte-net
+    external: true
