@@ -205,8 +205,15 @@ bench restart
 
 ```bash
 # Create a site
-bench new-site <site_name.localhost>
-
+bench new-site \
+    <site_name.localhost> \
+    --db-host mariadb \
+    --db-name <site_db_name> \
+    --db-password <site_db_password> \
+    --db-root-username root \
+    --db-root-password <root_password> \
+    --admin-password <frappe_administrator_password>
+    
 # Activate the site
 bench use <site_name.localhost>
 
